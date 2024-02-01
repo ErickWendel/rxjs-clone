@@ -41,10 +41,9 @@ const takeOnce = (canvas, eventName) => {
             const listener = function (e) {
                 controller.enqueue(e)
                 controller.terminate()
-                canvas.removeEventListener(eventName, listener)
             }
 
-            canvas.addEventListener(eventName, listener)
+            canvas.addEventListener(eventName, listener, { once: true })
         },
         transform(chunk, controller) {
             controller.enqueue(chunk)
