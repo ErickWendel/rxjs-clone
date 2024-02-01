@@ -28,25 +28,24 @@ const switchMap = (fn, options = { pairwise: true }) => {
                 const result = options.pairwise ? [chunk, value] : value
                 controller.enqueue(result)
 
-                // controller.enqueue({
-                //     origin: chunk,
-                //     active: value
-                // })
                 return read()
             })()
         },
     })
 }
 
-const takeOnce = (canvas, eventName) => {
+const takeUntil = (fn) => {
+    const readAndTerminate = async (stream, controller) => {
+        const reader = (stream.readable || stream).getReader()
+        const { value } = await reader.read()
+
+        controller.enqueue(value)
+        controller.terminate()
+    }
+
     return new TransformStream({
         start(controller) {
-            const listener = function (e) {
-                controller.enqueue(e)
-                controller.terminate()
-            }
-
-            canvas.addEventListener(eventName, listener, { once: true })
+            readAndTerminate(fn, controller)
         },
         transform(chunk, controller) {
             controller.enqueue(chunk)
@@ -78,10 +77,31 @@ const map = (fn) => {
     })
 }
 
+const combine = (streams) => {
+    return new ReadableStream({
+        start(controller) {
+            for (const stream of streams) {
+                const reader = (stream.readable || stream).getReader()
+
+                    ; (async function read() {
+                        const { value, done } = await reader.read()
+                        if (done) return
+                        // stream is done
+                        if(!controller.desiredSize) return
+                        controller.enqueue(value)
+
+                        return read()
+                    })()
+            }
+        }
+    })
+}
+
 export {
     fromEvent,
     switchMap,
-    takeOnce,
+    takeUntil,
     interval,
     map,
+    combine,
 }

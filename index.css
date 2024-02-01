@@ -3,3 +3,7 @@
     border-radius: 15px;
     cursor: crosshair;
   }
+  body {
+    /* prevent scroll */
+    overflow: hidden;
+  }
