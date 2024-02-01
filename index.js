@@ -1,7 +1,7 @@
 // https://codepen.io/yguo/pen/OyYGxQ
 // https://gist.github.com/escaroda/d3362b27709c24f15178b3ea90382788
 
-import { fromEvent, switchMap, takeOnce } from "./operators.js";
+import { fromEvent, interval, map, switchMap, takeOnce } from "./operators.js";
 
 const canvas = document.getElementById("sig-canvas");
 const ctx = canvas.getContext("2d");
@@ -24,29 +24,28 @@ const mouseEvents = {
 fromEvent(canvas, mouseEvents.down)
     .pipeThrough(
         switchMap(() =>
+            // interval(1000)
             fromEvent(canvas, mouseEvents.move)
                 .pipeThrough(
                     takeOnce(canvas, mouseEvents.up)
                 )
         )
     )
-
-    .pipeTo(new WritableStream({
-        write({ origin, active }) {
+    .pipeThrough(
+        map(function ({ origin, active }) {
             this._lastPosition = this._lastPosition ?? origin;
 
             const [from, to] = [this._lastPosition, active].map(item => getMousePos(canvas, item))
+            this._lastPosition = active.type === mouseEvents.up ? null : active
 
+            return { from, to }
+        })
+    )
+    .pipeTo(new WritableStream({
+        write({ from, to }) {
             ctx.moveTo(from.x, from.y);
             ctx.lineTo(to.x, to.y);
             ctx.stroke();
 
-            this._lastPosition = active.type === mouseEvents.up ? null : active
         }
     }))
-
-
-
-
-
-

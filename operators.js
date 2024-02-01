@@ -17,7 +17,9 @@ const fromEvent = (target, eventName) => {
 const switchMap = (fn) => {
     return new TransformStream({
         transform(chunk, controller) {
-            const reader = fn().getReader()
+            const stream = fn()
+            // can be a readable or a TransformStream.readable
+            const reader = (stream.readable || stream).getReader()
 
             return (async function read() {
                 const { value, done } = await reader.read()
@@ -50,8 +52,34 @@ const takeOnce = (canvas, eventName) => {
     })
 }
 
+const interval = (ms) => {
+    let intervalId
+    return new TransformStream({
+        start(controller) {
+            intervalId = setInterval(
+                () =>
+                    controller.enqueue(Date.now()),
+                ms
+            )
+        },
+        cancel() {
+            clearInterval(intervalId)
+        }
+    })
+}
+
+const map = (fn) => {
+    return new TransformStream({
+        transform(chunk, controller) {
+            controller.enqueue(fn.bind(fn)(chunk))
+        }
+    })
+}
+
 export {
     fromEvent,
     switchMap,
-    takeOnce
+    takeOnce,
+    interval,
+    map,
 }
