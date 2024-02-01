@@ -17,7 +17,7 @@ const fromEvent = (target, eventName) => {
 const switchMap = (fn) => {
     return new TransformStream({
         transform(chunk, controller) {
-            const stream = fn()
+            const stream = fn(chunk)
             // can be a readable or a TransformStream.readable
             const reader = (stream.readable || stream).getReader()
 

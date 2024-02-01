@@ -23,13 +23,13 @@ const mouseEvents = {
 
 fromEvent(canvas, mouseEvents.down)
     .pipeThrough(
-        switchMap(() =>
-            // interval(1000)
-            fromEvent(canvas, mouseEvents.move)
+        switchMap((e) => {
+            // return interval(1000)
+            return fromEvent(canvas, mouseEvents.move)
                 .pipeThrough(
                     takeOnce(canvas, mouseEvents.up)
                 )
-        )
+        })
     )
     .pipeThrough(
         map(function ({ origin, active }) {
