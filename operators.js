@@ -14,7 +14,7 @@ const fromEvent = (target, eventName) => {
     return readable
 }
 
-const switchMap = (fn) => {
+const switchMap = (fn, options = { pairwise: true }) => {
     return new TransformStream({
         transform(chunk, controller) {
             const stream = fn(chunk)
@@ -25,10 +25,13 @@ const switchMap = (fn) => {
                 const { value, done } = await reader.read()
                 if (done) return
 
-                controller.enqueue({
-                    origin: chunk,
-                    active: value
-                })
+                const result = options.pairwise ? [chunk, value] : value
+                controller.enqueue(result)
+
+                // controller.enqueue({
+                //     origin: chunk,
+                //     active: value
+                // })
                 return read()
             })()
         },

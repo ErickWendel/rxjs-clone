@@ -31,12 +31,18 @@ fromEvent(canvas, mouseEvents.down)
                 )
         })
     )
-    .pipeThrough(
-        map(function ({ origin, active }) {
-            this._lastPosition = this._lastPosition ?? origin;
+    // .pipeTo(new WritableStream({
+    //     write(e) {
+    //         console.log(e)
+    //     }
+    // }))
 
-            const [from, to] = [this._lastPosition, active].map(item => getMousePos(canvas, item))
-            this._lastPosition = active.type === mouseEvents.up ? null : active
+    .pipeThrough(
+        map(function ([mouseDown, mouseMove]) {
+            this._lastPosition = this._lastPosition ?? mouseDown;
+
+            const [from, to] = [this._lastPosition, mouseMove].map(item => getMousePos(canvas, item))
+            this._lastPosition = mouseMove.type === mouseEvents.up ? null : mouseMove
 
             return { from, to }
         })
