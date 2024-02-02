@@ -7,12 +7,16 @@ const canvas = document.getElementById("sig-canvas");
 const clearBtn = document.getElementById("clearBtn");
 const ctx = canvas.getContext("2d");
 
-const resetCanvas = () => {
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+const resetCanvas = (width, height) => {
     const parent = canvas.parentElement
-    canvas.width = parent.clientWidth * 0.9
-    canvas.height = parent.clientHeight * 2.5
 
-    ctx.strokeStyle = "#222222";
+    canvas.width = width || parent.clientWidth * 0.9
+    canvas.height = height || parent.clientHeight * 2
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = "green";
     ctx.lineWidth = 4;
 }
 resetCanvas()
@@ -45,13 +49,16 @@ const touchToMouse = (touchEvent, mouseEvent) => {
 }
 
 const db = []
-function store(position) {
+function setStore(position) {
     db.unshift(position)
 }
+
 function getStore() {
     return db
 }
-
+function cleanStore() {
+    db.length = 0
+}
 
 combine([
     fromEvent(canvas, mouseEvents.down),
@@ -89,27 +96,28 @@ combine([
     )
     .pipeTo(new WritableStream({
         write({ from, to }) {
-            store({ from, to })
+            setStore({ from, to })
             ctx.moveTo(from.x, from.y);
             ctx.lineTo(to.x, to.y);
             ctx.stroke();
         }
     }))
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 fromEvent(clearBtn, 'click')
     .pipeTo(new WritableStream({
         async write() {
-            for (const { from, to } of getStore()) {
-                // remove lines based on x  and y
-                ctx.clearRect(from.x, from.y, canvas.width, canvas.height);
+            ctx.beginPath()
 
+            for (const { from, to } of getStore()) {
+                ctx.strokeStyle = 'white';
+                ctx.moveTo(from.x, from.y);
+                ctx.lineTo(to.x, to.y);
+                ctx.stroke();
                 await sleep(10)
             }
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            canvas.width = canvas.width
-            ctx.lineWidth = 4;
-            db.length = 0
+
+            resetCanvas(canvas.width, canvas.height)
+            cleanStore()
         }
     }))
