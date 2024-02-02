@@ -1,9 +1,6 @@
-// https://codepen.io/yguo/pen/OyYGxQ
-// https://gist.github.com/escaroda/d3362b27709c24f15178b3ea90382788
-
 import { race, fromEvent, interval, map, switchMap, takeUntil } from "./operators.js";
 
-const canvas = document.getElementById("sig-canvas");
+const canvas = document.getElementById("canvas");
 const clearBtn = document.getElementById("clearBtn");
 const ctx = canvas.getContext("2d");
 
@@ -54,7 +51,7 @@ const store = {
     set(position) {
         this.db.unshift(position)
     },
-     get() {
+    get() {
         return this.db
     },
     clean() {

@@ -9,3 +9,109 @@ https://rxjs.dev/api/operators/pairwise
 https://codepen.io/yguo/pen/OyYGxQ
 https://gist.github.com/escaroda/d3362b27709c24f15178b3ea90382788
 https://github.com/tc39/proposal-iterator-helpers
+https://medium.com/@tarik.nzl/creating-a-canvas-component-with-free-hand-drawing-with-rxjs-and-angular-61279f577415
+https://stackblitz.com/edit/angular-rxjs-canvas-v12?file=src%2Fapp%2Fcanvas.component.ts
+
+show
+    https://codepen.io/yguo/pen/OyYGxQ
+    https://stackblitz.com/edit/angular-rxjs-canvas-v12?file=src%2Fapp%2Fcanvas.component.ts
+
+npm init -y
+npm i -D browser-sync@3.0.2
+package.json
+    "start": "npx browser-sync start --server --watch --files \"**/*.js\"",
+touch index.html
+    all
+
+touch index.js
+    const canvas
+    const clear
+    const ctx
+
+touch operators.js
+    fromEvent
+        https://www.learnrxjs.io/learn-rxjs/operators/creation/fromevent
+        all
+index.js
+
+    fromEvent
+        -> pipe to console.log
+operators
+    interval
+        https://www.learnrxjs.io/learn-rxjs/operators/creation/interval
+index.js
+    pipe interval to console.log
+
+operators
+    map
+        https://www.learnrxjs.io/learn-rxjs/operators/transformation/map
+index.js
+    pipe interval to map
+    mouseEvents
+        all
+    resetCanvas
+
+    fromevent(canvas, mouseEvents)
+        pipeTo
+            write(mouseDown) {
+                const mousePos = getMousePos(canvas, mouseDown)
+
+                ctx.moveTo(0, 0);
+                ctx.lineTo(mousePos.x, mousePos.y);
+                ctx.stroke();
+            }
+    fromevent(canvas, mouseEvents.touchstart)
+    touchToMouse
+
+-> should be able to draw by clicking on mobile mode and see results on terminal
+
+operators
+    race
+        https://www.learnrxjs.io/learn-rxjs/operators/combination/race
+index.js
+    add fromEvent for both
+
+-> should work for both mouse and touch
+operators
+    https://www.learnrxjs.io/learn-rxjs/operators/transformation/switchmap
+    https://rxjs.dev/api/operators/pairwise
+
+    switchMap
+index.js
+    switchMap
+
+    .pipeThrough(
+        map(function ([mouseDown, mouseMove]) {
+            this._lastPosition = this._lastPosition ?? mouseDown;
+
+            const [from, to] = [this._lastPosition, mouseMove].map(item => getMousePos(canvas, item))
+            this._lastPosition = mouseMove.type === mouseEvents.up ? null : mouseMove
+
+            return { from, to }
+        })
+    )
+
+    .pipeTo
+        all
+-> should should draw without stopping
+
+operators
+    takeUntil
+        https://www.learnrxjs.io/learn-rxjs/operators/filtering/takeuntil
+
+index.js
+    takeuntil
+        all
+-> should be able to draw correcly
+
+index.js
+    store
+        all
+    .pipeTo
+        add store
+
+    fromEvent click
+        all
+-> should be able to undo drawing
+
+done :)

@@ -5,31 +5,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recreating RXJS Operators using Web Streams</title>
-    <link rel="stylesheet" href="./index.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script type="module" src="./index.js"></script>
+    <style>
+        * {
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            /* prevent scroll */
+            overflow: hidden;
+        }
+
+        canvas {
+            border: 2px dotted gray;
+            border-radius: 15px;
+            cursor: crosshair;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .col-md-12 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h1>Use your imagination <3</h1>
+                <h1>Use your imagination 💚 </h1>
                 <p>Draw in the canvas below!</p>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <canvas id="sig-canvas" >
+                <canvas id="canvas">
                     Get a better browser, bro.
                 </canvas>
             </div>
         </div>
         <div class="row">
-			<div class="col-md-12">
-				<button class="btn btn-default" id="clearBtn">Clear Signature</button>
-			</div>
-		</div>
+            <div class="col-md-12">
+                <button class="" id="clearBtn">Clear</button>
+            </div>
+        </div>
         <br />
     </div>
 </body>
