@@ -1,7 +1,7 @@
 // https://codepen.io/yguo/pen/OyYGxQ
 // https://gist.github.com/escaroda/d3362b27709c24f15178b3ea90382788
 
-import { combine, fromEvent, interval, map, switchMap, takeUntil } from "./operators.js";
+import { race, fromEvent, interval, map, switchMap, takeUntil } from "./operators.js";
 
 const canvas = document.getElementById("sig-canvas");
 const clearBtn = document.getElementById("clearBtn");
@@ -12,7 +12,7 @@ const resetCanvas = (width, height) => {
     const parent = canvas.parentElement
 
     canvas.width = width || parent.clientWidth * 0.9
-    canvas.height = height || parent.clientHeight * 2
+    canvas.height = height || parent.clientHeight * 1.5
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -36,6 +36,7 @@ const mouseEvents = {
     touchstart: 'touchstart',
     touchmove: 'touchmove',
     touchend: 'touchend',
+    click: 'click'
 }
 const touchToMouse = (touchEvent, mouseEvent) => {
     const [touch] = touchEvent.touches.length ?
@@ -48,33 +49,35 @@ const touchToMouse = (touchEvent, mouseEvent) => {
     })
 }
 
-const db = []
-function setStore(position) {
-    db.unshift(position)
+const store = {
+    db: [],
+    set(position) {
+        this.db.unshift(position)
+    },
+     get() {
+        return this.db
+    },
+    clean() {
+        this.db.length = 0
+    }
 }
 
-function getStore() {
-    return db
-}
-function cleanStore() {
-    db.length = 0
-}
 
-combine([
+race([
     fromEvent(canvas, mouseEvents.down),
     fromEvent(canvas, mouseEvents.touchstart)
         .pipeThrough(map(e => touchToMouse(e, mouseEvents.down))),
 ])
     .pipeThrough(
         switchMap((e) => {
-            return combine([
+            return race([
                 fromEvent(canvas, mouseEvents.move),
                 fromEvent(canvas, mouseEvents.touchmove)
                     .pipeThrough(map(e => touchToMouse(e, mouseEvents.move))),
             ])
                 .pipeThrough(
                     takeUntil(
-                        combine([
+                        race([
                             fromEvent(canvas, mouseEvents.up),
                             fromEvent(canvas, mouseEvents.leave),
                             fromEvent(canvas, mouseEvents.touchend)
@@ -96,7 +99,7 @@ combine([
     )
     .pipeTo(new WritableStream({
         write({ from, to }) {
-            setStore({ from, to })
+            store.set({ from, to })
             ctx.moveTo(from.x, from.y);
             ctx.lineTo(to.x, to.y);
             ctx.stroke();
@@ -104,20 +107,20 @@ combine([
     }))
 
 
-fromEvent(clearBtn, 'click')
+fromEvent(clearBtn, mouseEvents.click)
     .pipeTo(new WritableStream({
         async write() {
             ctx.beginPath()
+            ctx.strokeStyle = 'white';
 
-            for (const { from, to } of getStore()) {
-                ctx.strokeStyle = 'white';
+            for (const { from, to } of store.get()) {
                 ctx.moveTo(from.x, from.y);
                 ctx.lineTo(to.x, to.y);
                 ctx.stroke();
-                await sleep(10)
+                await sleep(5)
             }
 
             resetCanvas(canvas.width, canvas.height)
-            cleanStore()
+            store.clean()
         }
     }))

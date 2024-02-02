@@ -1,0 +1,11 @@
+https://www.learnrxjs.io/learn-rxjs/operators/creation/fromevent
+https://www.learnrxjs.io/learn-rxjs/operators/combination/race
+https://www.learnrxjs.io/learn-rxjs/operators/transformation/map
+https://www.learnrxjs.io/learn-rxjs/operators/creation/interval
+https://www.learnrxjs.io/learn-rxjs/operators/filtering/takeuntil
+https://www.learnrxjs.io/learn-rxjs/operators/transformation/switchmap
+https://rxjs.dev/api/operators/pairwise
+
+https://codepen.io/yguo/pen/OyYGxQ
+https://gist.github.com/escaroda/d3362b27709c24f15178b3ea90382788
+https://github.com/tc39/proposal-iterator-helpers

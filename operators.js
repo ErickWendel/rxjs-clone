@@ -1,4 +1,8 @@
-
+/**
+ * @param {EventTarget} target
+ * @param {string} eventName
+ * @returns {ReadableStream}
+ */
 const fromEvent = (target, eventName) => {
     let _listener;
     const readable = new ReadableStream({
@@ -14,6 +18,15 @@ const fromEvent = (target, eventName) => {
     return readable
 }
 
+/**
+ * @typedef {function(): ReadableStream | TransformStream} StreamFunction
+ *
+ * @param {StreamFunction} fn
+ * @param {object} options
+ * @param {boolean} options.pairwise
+ * set default pairwise to true
+ * @returns {TransformStream}
+ */
 const switchMap = (fn, options = { pairwise: true }) => {
     return new TransformStream({
         transform(chunk, controller) {
@@ -34,7 +47,11 @@ const switchMap = (fn, options = { pairwise: true }) => {
     })
 }
 
-const takeUntil = (fn) => {
+/**
+ * @param {ReadableStream | TransformStream} stream
+ * @returns {TransformStream}
+ */
+const takeUntil = (stream) => {
     const readAndTerminate = async (stream, controller) => {
         const reader = (stream.readable || stream).getReader()
         const { value } = await reader.read()
@@ -45,7 +62,7 @@ const takeUntil = (fn) => {
 
     return new TransformStream({
         start(controller) {
-            readAndTerminate(fn, controller)
+            readAndTerminate(stream, controller)
         },
         transform(chunk, controller) {
             controller.enqueue(chunk)
@@ -53,6 +70,10 @@ const takeUntil = (fn) => {
     })
 }
 
+/**
+ * @param {Number} ms
+ * @returns {TransformStream}
+ */
 const interval = (ms) => {
     let intervalId
     return new TransformStream({
@@ -69,6 +90,10 @@ const interval = (ms) => {
     })
 }
 
+/**
+ * @param {Function} fn
+ * @returns {TransformStream}
+ */
 const map = (fn) => {
     return new TransformStream({
         transform(chunk, controller) {
@@ -77,7 +102,12 @@ const map = (fn) => {
     })
 }
 
-const combine = (streams) => {
+/**
+ * @typedef {ReadableStream | TransformStream} Stream
+ * @param {Stream[]} streams
+ * @returns {ReadableStream}
+ */
+const race = (streams) => {
     return new ReadableStream({
         start(controller) {
             for (const stream of streams) {
@@ -87,7 +117,7 @@ const combine = (streams) => {
                         const { value, done } = await reader.read()
                         if (done) return
                         // stream is done
-                        if(!controller.desiredSize) return
+                        if (!controller.desiredSize) return
                         controller.enqueue(value)
 
                         return read()
@@ -99,9 +129,9 @@ const combine = (streams) => {
 
 export {
     fromEvent,
-    switchMap,
-    takeUntil,
     interval,
     map,
-    combine,
+    race,
+    switchMap,
+    takeUntil,
 }
