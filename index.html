@@ -1,64 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recreating RXJS Operators using Web Streams</title>
+    <title>Recreating RxJS Operators using Web Streams</title>
     <script type="module" src="./index.js"></script>
     <style>
         * {
             font-family: 'Courier New', Courier, monospace;
         }
-
         body {
-            /* prevent scroll */
+            /* disabilita o scroll */
             overflow: hidden;
         }
-
         canvas {
             border: 2px dotted gray;
             border-radius: 15px;
             cursor: crosshair;
         }
-
         .container {
             padding: 20px;
         }
-
         .row {
             display: flex;
         }
-
         .col-md-12 {
             flex: 0 0 100%;
             max-width: 100%;
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <h1>Use your imagination 💚 </h1>
-                <p>Draw in the canvas below!</p>
+                <h1>Use your imagination 💚</h1>
+                <p>Draw in the canvas below</p>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <canvas id="canvas">
-                    Get a better browser, bro.
+                    Get a better browser bro!
                 </canvas>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
-                <button class="" id="clearBtn">Clear</button>
+            <div>
+                <button id="clearBtn">Clear</button>
             </div>
         </div>
-        <br />
     </div>
 </body>
-
 </html>

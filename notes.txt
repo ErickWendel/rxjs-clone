@@ -4,14 +4,14 @@ https://www.learnrxjs.io/learn-rxjs/operators/transformation/map
 https://www.learnrxjs.io/learn-rxjs/operators/creation/interval
 https://www.learnrxjs.io/learn-rxjs/operators/filtering/takeuntil
 https://www.learnrxjs.io/learn-rxjs/operators/transformation/switchmap
-https://rxjs.dev/api/operators/pairwise
+https://www.learnrxjs.io/learn-rxjs/operators/combination/pairwise
 
 https://codepen.io/yguo/pen/OyYGxQ
 https://gist.github.com/escaroda/d3362b27709c24f15178b3ea90382788
 https://github.com/tc39/proposal-iterator-helpers
 https://medium.com/@tarik.nzl/creating-a-canvas-component-with-free-hand-drawing-with-rxjs-and-angular-61279f577415
 https://stackblitz.com/edit/angular-rxjs-canvas-v12?file=src%2Fapp%2Fcanvas.component.ts
-
+https://www.learnrxjs.io/learn-rxjs/operators/combination/merge
 show
     https://codepen.io/yguo/pen/OyYGxQ
     https://stackblitz.com/edit/angular-rxjs-canvas-v12?file=src%2Fapp%2Fcanvas.component.ts
@@ -66,8 +66,8 @@ index.js
 -> should be able to draw by clicking on mobile mode and see results on terminal
 
 operators
-    race
-        https://www.learnrxjs.io/learn-rxjs/operators/combination/race
+    merge
+        https://www.learnrxjs.io/learn-rxjs/operators/combination/merge
 index.js
     add fromEvent for both
 

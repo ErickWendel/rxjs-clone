@@ -1,10 +1,10 @@
 {
-  "name": "state-machine-with-streams",
+  "name": "rxjsclone",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx browser-sync start --server --watch --files \"**/*.js\"",
+    "start": "npx browser-sync start --server --watch --files \"**/*.html\" \"**/*.css\" \"**/*.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
