@@ -59,21 +59,18 @@ const map = (fn) => {
 const merge = (streams) => {
     return new ReadableStream({
         async start(controller) {
-            for (const stream of streams) {
+            async function read(stream) {
                 const reader = (stream.readable || stream).getReader()
-                async function read() {
+                while (true) {
                     const { value, done } = await reader.read()
-                    if (done) return
-                    // verifica se a stream ja encerrou
-                    if(!controller.desiredSize) return
-
+                    if (done) {
+                        return;
+                    }
                     controller.enqueue(value)
-
-                    return read()
                 }
-
-                read()
             }
+            await Promise.all(streams.map(stream => read(stream)))
+            controller.terminate()
         }
     })
 }
@@ -90,22 +87,19 @@ const merge = (streams) => {
 const switchMap = (fn, options = { pairwise: true }) => {
     return new TransformStream({
         // mousedown
-        transform(chunk, controller) {
+        async transform(chunk, controller) {
             const stream = fn.bind(fn)(chunk)
-
             const reader = (stream.readable || stream).getReader()
-            async function read() {
-                // mousemove
+            // mousemove
+            while(true) {
                 const { value, done } = await reader.read()
-                if (done) return
                 const result = options.pairwise ? [chunk, value] : value
+                if (done) {
+                    controller.terminate()
+                    return;
+                }
                 controller.enqueue(result)
-
-                return read()
             }
-
-            return read()
-
         }
     })
 }
