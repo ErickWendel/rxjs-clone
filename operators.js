@@ -24,10 +24,11 @@ const fromEvent = (target, eventName) => {
  */
 const interval = (ms) => {
     let _intervalId
+    let i = 0
     return new ReadableStream({
         start(controller) {
             _intervalId = setInterval(() => {
-                controller.enqueue(Date.now())
+                controller.enqueue(i++, Date.now())
             }, ms)
         },
         cancel() {
@@ -85,21 +86,34 @@ const merge = (streams) => {
  * @return {TransformStream}
  */
 const switchMap = (fn, options = { pairwise: true }) => {
+    let lastRead = undefined;
     return new TransformStream({
         // mousedown
         async transform(chunk, controller) {
-            const stream = fn.bind(fn)(chunk)
-            const reader = (stream.readable || stream).getReader()
-            // mousemove
-            while(true) {
-                const { value, done } = await reader.read()
-                const result = options.pairwise ? [chunk, value] : value
-                if (done) {
-                    controller.terminate()
-                    return;
-                }
-                controller.enqueue(result)
+            //switchMap garantee that only one inner substream is active
+            if (lastRead) {
+                lastRead.continue = false;
             }
+            const stream = fn.bind(fn)(chunk)
+           
+            const reader = (stream.readable || stream).getReader()
+            const read = async function () {
+                // mousemove
+                this.continue = true
+                while (this.continue) {
+                    const { value, done } = await reader.read()
+                    const result = options.pairwise ? [chunk, value] : value
+                    if (done) {
+                        controller.terminate()
+                        return;
+                    }
+                    if (this.continue) {
+                        controller.enqueue(result)
+                    }
+                }
+            }
+            lastRead = read;
+            read.bind(read)();
         }
     })
 }
